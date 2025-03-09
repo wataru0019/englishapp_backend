@@ -1,10 +1,14 @@
-FROM public.ecr.aws/lambda/python:3.9
+FROM python:3.9-slim
 
-# アプリケーションディレクトリをコピー
-COPY . ${LAMBDA_TASK_ROOT}
+WORKDIR /app
 
-# 依存関係のインストール
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Lambda ハンドラの設定
-CMD ["lambda_handler.handler"]
+COPY . .
+
+# Cloud Runは環境変数PORTを使用
+ENV PORT 8080
+
+# Cloud Run用のエントリーポイント
+CMD exec uvicorn main:app --host 0.0.0.0 --port ${PORT}

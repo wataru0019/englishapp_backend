@@ -1,0 +1,30 @@
+# ファイル名: cloudbuild.yaml
+# プロジェクトのルートディレクトリに配置します
+
+steps:
+  # Docker イメージをビルド
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$englishapp-453214/englishapp:$COMMIT_SHA', '.']
+
+  # ビルドしたイメージを Container Registry にプッシュ
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$englishapp-453214/englishapp:$COMMIT_SHA']
+
+  # Cloud Run にデプロイ
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'fastapi-service'
+      - '--image'
+      - 'gcr.io/$englishapp-453214/englishapp:$COMMIT_SHA'
+      - '--region'
+      - 'asia-northeast1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+
+# イメージのタグ付け
+images:
+  - 'gcr.io/$englishapp-453214/englishapp:$COMMIT_SHA'

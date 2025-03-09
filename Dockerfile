@@ -8,7 +8,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Cloud Runは環境変数PORTを使用
-ENV PORT 8080
+ENV PORT=8080
 
 # Cloud Run用のエントリーポイント
 CMD exec uvicorn main:app --host 0.0.0.0 --port ${PORT}

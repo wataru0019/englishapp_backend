@@ -4,11 +4,11 @@
 steps:
   # Docker イメージをビルド
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$englishapp-453214/englishapp:$COMMIT_SHA', '.']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/englishapp:$COMMIT_SHA', '.']
 
   # ビルドしたイメージを Container Registry にプッシュ
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$englishapp-453214/englishapp:$COMMIT_SHA']
+    args: ['push', 'gcr.io/$PROJECT_ID/englishapp:$COMMIT_SHA']
 
   # Cloud Run にデプロイ
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -18,7 +18,7 @@ steps:
       - 'deploy'
       - 'fastapi-service'
       - '--image'
-      - 'gcr.io/$englishapp-453214/englishapp:$COMMIT_SHA'
+      - 'gcr.io/$PROJECT_ID/englishapp:$COMMIT_SHA'
       - '--region'
       - 'asia-northeast1'
       - '--platform'
@@ -27,4 +27,4 @@ steps:
 
 # イメージのタグ付け
 images:
-  - 'gcr.io/$englishapp-453214/englishapp:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/englishapp:$COMMIT_SHA'

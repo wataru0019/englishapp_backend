@@ -11,4 +11,5 @@ COPY . .
 ENV PORT=8080
 
 # Cloud Run用のエントリーポイント
-CMD exec uvicorn main:app --host 0.0.0.0 --port ${PORT}
+# app.main:appを指定して正しいモジュールを実行
+CMD exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT}

@@ -1,14 +1,14 @@
 # ファイル名: cloudbuild.yaml
-# プロジェクトのルートディレクトリに配置します
+# Artifact Registryを使用するように更新
 
 steps:
   # Docker イメージをビルド
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/englishapp:$COMMIT_SHA', '.']
+    args: ['build', '-t', 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/englishapp:$COMMIT_SHA', '.']
 
-  # ビルドしたイメージを Container Registry にプッシュ
+  # ビルドしたイメージを Artifact Registry にプッシュ
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/englishapp:$COMMIT_SHA']
+    args: ['push', 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/englishapp:$COMMIT_SHA']
 
   # Cloud Run にデプロイ
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -16,15 +16,22 @@ steps:
     args:
       - 'run'
       - 'deploy'
-      - 'fastapi-service'
+      - 'englishapp'
       - '--image'
-      - 'gcr.io/$PROJECT_ID/englishapp:$COMMIT_SHA'
+      - 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/englishapp:$COMMIT_SHA'
       - '--region'
       - 'asia-northeast1'
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
+      - '--update-env-vars'
+      - 'SUPABASE_URL=${_SUPABASE_URL},SUPABASE_KEY=${_SUPABASE_KEY}'
 
 # イメージのタグ付け
 images:
-  - 'gcr.io/$PROJECT_ID/englishapp:$COMMIT_SHA'
+  - 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/englishapp:$COMMIT_SHA'
+
+# 代入変数
+substitutions:
+  _SUPABASE_URL: 'your-supabase-url'  # デフォルト値（GitHub Secretsから上書きすることを推奨）
+  _SUPABASE_KEY: 'your-supabase-key'  # デフォルト値（GitHub Secretsから上書きすることを推奨）

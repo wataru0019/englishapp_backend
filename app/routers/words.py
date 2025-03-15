@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException, Query, Body, Path
+from fastapi import APIRouter, HTTPException, Query, Body, Path, Depends
 from typing import List, Optional
 from ..models.models import Word, WordCreate, WordUpdate, ErrorResponse
 from ..db.supabase import supabase  # これで正しくインポートできます
 from ..utils.helpers import handle_supabase_response, filter_none_values
+from ..utils.auth import get_current_active_user
 import logging
 
 logger = logging.getLogger(__name__)
@@ -55,6 +56,7 @@ async def search_words(
 @router.post("/", response_model=Word)
 async def create_word(
     word: WordCreate = Body(..., description="作成する単語情報"),
+    current_user = Depends(get_current_active_user)
 ):
     """
     新しい単語を登録する
@@ -81,6 +83,7 @@ async def get_word(
 async def update_word(
     word_id: int = Path(..., description="更新する単語のID"),
     word: WordUpdate = Body(..., description="更新する単語情報"),
+    current_user = Depends(get_current_active_user)
 ):
     """
     指定したIDの単語を更新する
@@ -102,6 +105,7 @@ async def update_word(
 @router.delete("/{word_id}", response_model=dict)
 async def delete_word(
     word_id: int = Path(..., description="削除する単語のID"),
+    current_user = Depends(get_current_active_user)
 ):
     """
     指定したIDの単語を削除する
@@ -114,6 +118,7 @@ async def delete_word(
 @router.post("/batch", response_model=List[Word])
 async def create_words_batch(
     words: List[WordCreate] = Body(..., description="バッチで作成する単語リスト"),
+    current_user = Depends(get_current_active_user)
 ):
     """
     複数の単語を一括で登録する

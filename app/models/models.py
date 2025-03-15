@@ -9,7 +9,7 @@ class WordBase(BaseModel):
     example_sentence: Optional[str] = Field(None, title="example_sentence", description="例文")
 
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 class WordCreate(WordBase):
     """単語作成モデル"""
@@ -27,10 +27,7 @@ class WordInDB(WordBase):
     created_at: datetime = Field(..., title="created_at")
 
     class Config:
-        from_attributes = True
-        json_encoders = {
-            datetime: lambda v: v.isoformat()
-        }
+        orm_mode = True
 
 class Word(WordInDB):
     """API応答用の単語モデル"""

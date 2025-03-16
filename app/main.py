@@ -1,7 +1,7 @@
 import logging
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from .routers import words, auth
+from .routers import words, auth, chat
 from .config import settings
 
 # ログ設定
@@ -28,6 +28,7 @@ app.add_middleware(
 # ルーターの登録
 app.include_router(words.router, prefix="/api/v1")
 app.include_router(auth.router)
+app.include_router(chat.router)
 
 @app.get("/health")
 async def health_check():
